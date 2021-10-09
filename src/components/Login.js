@@ -1,12 +1,52 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
+import axiosWithAuth from '../utils/axiosWithAuth'
 
+const initialCredentials = {
+    username: '',
+    password:''
+}
 const Login = () => {
-    
+    const [credentials, setCredentials] = useState(initialCredentials) 
+    const [error, setError] = useState('')
+
+    const login = (e) => {
+        e.preventDefault()
+        axiosWithAuth().post('/login', credentials)
+            .then(res => {
+                
+                localStorage.setItem('token', res.data.token)
+                window.location.pathname = '/view'
+                setError('')
+            })
+            .catch(err => {
+                
+                setError(err.response.data.error)
+            })
+
+    }
+    const onChange = (e) => {
+            setCredentials({
+                ...credentials,
+                [e.target.name]: e.target.value
+                })
+
+    }
     return(<ComponentContainer>
         <ModalContainer>
             <h1>Welcome to Blogger Pro</h1>
             <h2>Please enter your account information.</h2>
+            <div>
+                <form onSubmit={login}>
+                    <label htmlFor='username'>User Name</label>
+                    <input id='username' name='username' type='text' value={credentials.username} onChange={onChange}/>
+                    <label htmlFor='password'>Password</label>
+                    <input id='password' name='password' type='password' value={credentials.password} onChange={onChange}/>
+                    <br/>
+                    <button type='submit' id='submit'>Log In</button>
+                </form>
+                    {error && <p id='error' >{error}</p>}
+            </div>
         </ModalContainer>
     </ComponentContainer>);
 }
