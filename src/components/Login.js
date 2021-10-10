@@ -6,7 +6,7 @@ const initialCredentials = {
     username: '',
     password:''
 }
-const Login = () => {
+const Login = (props) => {
     const [credentials, setCredentials] = useState(initialCredentials) 
     const [error, setError] = useState('')
 
@@ -16,12 +16,13 @@ const Login = () => {
             .then(res => {
                 
                 localStorage.setItem('token', res.data.token)
-                window.location.pathname = '/view'
                 setError('')
+                props.history.push('/view')
+                
             })
             .catch(err => {
-                
-                setError(err.response.data.error)
+                // console.log(err)
+                 setError(err.response.data.error)
             })
 
     }
@@ -43,7 +44,7 @@ const Login = () => {
                     <label htmlFor='password'>Password</label>
                     <input id='password' name='password' type='password' value={credentials.password} onChange={onChange}/>
                     <br/>
-                    <button type='submit' id='submit'>Log In</button>
+                    <button id='submit'>Log In</button>
                 </form>
                     {error && <p id='error' >{error}</p>}
             </div>
